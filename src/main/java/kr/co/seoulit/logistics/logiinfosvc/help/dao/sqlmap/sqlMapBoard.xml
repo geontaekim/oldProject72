@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="kr.co.seoulit.logistics.logiinfosvc.help.dao.BoardDAO">
+  	
+  	<resultMap type="kr.co.seoulit.logistics.logiinfosvc.help.to.boardTO2" id="boardResult">
+  		<result property="frmTitle" column="FRMTITLE"/>
+  		<result property="errnum" column="ERRNUM"/>
+  		<result property="username" column="USERNAME"/>
+  		<result property="frmContents" column="FRMCONTENTS"/>
+ 		 <result property="seq_num" column="SEQ_NUM"/> 
+  	</resultMap>
+  	
+  	
+	  	<select id="selectBoardList" resultMap="boardResult">
+	  		SELECT * FROM BOARD ORDER BY SEQ_NUM DESC
+  	</select>
+
+	  	<select id="selectBoardList2" resultMap="boardResult">
+	  		SELECT * FROM BOARD WHERE USERNAME=#{username} ORDER BY SEQ_NUM DESC
+  	</select>
+  	
+  <!-- 	<insert id="insertContent" parameterType="kr.co.seoulit.logistics.logiinfosvc.help.to.boardTO2">
+  		INSERT INTO BOARD
+	( FRMTITLE , ERRNUM , USERNAME , FRMCONTENTS , SEQ_NUM )
+	VALUES ( #{frmTitle} , #{errnum} , #{username} , #{frmContents} , DELIVER_SEQ.NEXTVAL )		
+  	</insert> -->
+  	
+   	<insert id="insertContent" parameterType="kr.co.seoulit.logistics.logiinfosvc.help.to.boardTO2">
+  		{call P_CRESEQ(#{username},#{frmTitle},#{frmContents},#{errnum})}
+  	</insert> 
+ 
+  	
+  	 <select id="selectcontent" parameterType="kr.co.seoulit.logistics.logiinfosvc.help.to.boardTO2" resultMap="boardResult" > 
+		SELECT * FROM BOARD WHERE SEQ_NUM=#{SEQ_NUM}
+ 	</select>
+  	
+  	<delete id="deleteboardcontent" parameterType="kr.co.seoulit.logistics.logiinfosvc.help.to.boardTO2">
+		DELETE FROM BOARD WHERE SEQ_NUM=#{SEQ_NUM}
+	</delete>
+	
+  	
+  	<resultMap type="kr.co.seoulit.logistics.logiinfosvc.compinfo.to.CodeDetailTO" id="codeDetailResult">
+  		<result property="divisionCodeNo" column="DIVISION_CODE_NO"/>
+   		<result property="detailCode" column="DETAIL_CODE"/>
+   		<result property="detailCodeName" column="DETAIL_CODE_NAME"/>
+   		<result property="codeUseCheck" column="CODE_USE_CHECK"/>
+   		<result property="description" column="DESCRIPTION"/> 
+  	</resultMap>
+  	
+  	<select id="selectDetailCodeList" parameterType="String" resultMap="codeDetailResult">
+  		SELECT * FROM CODE_DETAIL WHERE DIVISION_CODE_NO LIKE #{divisionCode}
+  	</select>
+  	
+  	
+  	<insert id="insertDetailCode" parameterType="kr.co.seoulit.logistics.logiinfosvc.compinfo.to.CodeDetailTO">
+ 		INSERT INTO CODE_DETAIL
+	( DIVISION_CODE_NO , DETAIL_CODE , DETAIL_CODE_NAME , CODE_USE_CHECK , DESCRIPTION )
+	VALUES ( #{divisionCodeNo} , #{detailCode} , #{detailCodeName} , #{codeUseCheck} , #{description} )		
+   	</insert>
+  	
+  	
+  	<update id="updateDetailCode" parameterType="kr.co.seoulit.logistics.logiinfosvc.compinfo.to.CodeDetailTO">
+  				UPDATE CODE_DETAIL SET DETAIL_CODE_NAME = #{detailCodeName} , CODE_USE_CHECK = #{codeUseCheck}, DESCRIPTION = #{description} 
+  		WHERE DIVISION_CODE_NO = #{divisionCodeNo} 
+  		AND   DETAIL_CODE = #{detailCode} 
+	</update>
+  	
+  	<delete id="deleteDetailCode" parameterType="kr.co.seoulit.logistics.logiinfosvc.compinfo.to.CodeDetailTO">
+		DELETE FROM CODE_DETAIL WHERE DIVISION_CODE_NO = #{divisionCodeNo} AND DETAIL_CODE = #{detailCode}
+	</delete>
+	
+	<update id="changeCodeUseCheck" parameterType="map" >		
+			UPDATE CODE_DETAIL SET CODE_USE_CHECK = #{codeUseCheck} 
+		WHERE DIVISION_CODE_NO = #{divisionCodeNo} 
+		AND   DETAIL_CODE  = #{detailCode}
+</update>
+	
+
+  	<resultMap type="kr.co.seoulit.logistics.logiinfosvc.compinfo.to.LatLngTO" id="latLngList">
+  		<result property="latitude" column="LATITUDE"/>
+  		<result property="longitude" column="LONGITUDE"/>
+  	</resultMap>
+  	
+  	<select id="selectLatLngList" parameterType="String" resultMap="latLngList">
+  		SELECT * FROM WAREHOUSE WHERE WAREHOUSE_CODE = #{wareHouseCodeNo}
+  	</select>
+  	
+  	
+  	<resultMap type="kr.co.seoulit.logistics.logiinfosvc.compinfo.to.ImageTO" id="detailItemList">
+  		<result property="itemGroupCode" column="ITEM_GROUP_CODE"/>
+  		<result property="image" column="IMAGE"/>
+  		<result property="explanation" column="EXPLANATION"/>
+  	</resultMap>
+  	
+  	<select id="selectDetailItemList" parameterType="String" resultMap="detailItemList">
+  		SELECT * FROM ITEM_IMG WHERE ITEM_GROUP_CODE = #{itemGroupCodeNo}
+  	</select>
+	
+</mapper>
